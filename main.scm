@@ -9,6 +9,10 @@
 (define sharpen-action "S")
 (define defend-action "D")
 
+
+;; When reading from the history, individual characters, not strings have to be reading
+;; these are definitions which can be compared to the characters read from the history
+;; strings.
 (define poke-action-char #\P)
 (define sharpen-action-char #\S)
 (define defend-action-char #\D)
@@ -326,6 +330,13 @@
   )
 )
 
+(define duel-hard
+  (lambda ()
+    (caveman-duel player-decision-function dynamic-strategy 
+    player-caveman-name "Biggig" player-caveman-title "the Kid")
+  )
+)
+
 ;;TODO finish this to build and execute a tournament among various functions
 ;; for figuring out what to do
 (define run-tournament
@@ -361,6 +372,38 @@
       sharpen-action
       poke-action
     )  
+  )
+)
+
+(define dynamic-strategy
+  (lambda (my-history opponent-history)
+    (define my-sharpness (determine-sharpness my-history))
+    (define opponent-sharpness (determine-sharpness opponent-history))
+    (if
+      ;;If I'm super sharp or my opponent is almost there, attack! 
+      (or
+          (is-super-sharp my-history)
+          (and
+            (= 4 opponent-sharpness)
+            (is-sharp my-history)
+          )
+      ) 
+      poke-action
+      (if 
+        ;;every 7th turn (remainder is 0 of the lenght of the history divided by 7 
+        ;;every 7 turns) I go a little wild and assume my oppoent won't attack
+        (= 0 
+          (mod (string-length my-history) 7)
+        )
+        sharpen-action
+        ;;otherwise I bide my time
+        (if 
+          (is-sharp opponent-history)
+          defend-action
+          sharpen-action
+        )
+      )
+    )
   )
 )
 
@@ -403,7 +446,7 @@
       ;; "S" would sharpen "P" would poke and "B" would block
       ;; You can also have your caveman do something else (any string), 
       ;; but it won't help you win.
-    "pick his nose"
+    "picks his nose"
   )
 )
 
