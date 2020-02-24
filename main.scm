@@ -23,6 +23,7 @@
 ;; Then unless the other caveman is also poking with a super sharp stick
 ;; the super sharp poker wins
 
+;;Returns the winner's name
 (define caveman-duel
   (lambda
     (
@@ -72,8 +73,7 @@
     )
     ;; Life expectency is short in pre-history if the fight lasts 100 rounds both cavemen lose
     (if ( > timeout-counter 100)
-      (describe-death-by-old-age
-      )
+      (time-out)
       (begin
         (display (string-append "Round " (number->string timeout-counter) " begins!"))
         (newline)
@@ -89,13 +89,13 @@
         ;;requirements to win for player 1
           (has-won? caveman-one-action caveman-two-action caveman-one-sharpness caveman-two-sharpness)
           ;;Display who won and end when we have a winner
-          (describe-winning caveman-one-name)
+          (win caveman-one-name)
           ;;otherwise check if the other player won
           (if 
         ;;requirements to win for player 2
             (has-won? caveman-two-action caveman-one-action caveman-two-sharpness caveman-one-sharpness)
           ;;Display who won and end when we have a winner
-            (describe-winning caveman-two-name)
+            (win caveman-two-name)
           ;;otherwise update the state and fight again
             (caveman-duel-with-state
               caveman-one-brain 
@@ -115,6 +115,25 @@
         )
       )
     )
+  )
+)
+
+;;End state functions
+
+
+;; describe wining and return the winner
+(define win
+  (lambda (winner-name)
+    (describe-winning winner-name)
+    winner-name
+  )
+)
+
+;; define timeout return empty string  for no winner
+(define time-out
+  (lambda ()
+    (describe-death-by-old-age)
+    ""
   )
 )
 
